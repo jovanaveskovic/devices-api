@@ -1,6 +1,8 @@
 package challenge.devices.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,17 +12,19 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeviceResponse {
+public class UpdateDeviceRequest {
 
-    @Schema(description = "Device id", example = "123", type = "Long")
-    private Long id;
-
+    @NotEmpty
     @Schema(description = "Device name", example = "Router", type = "String")
     private String name;
 
+    @NotEmpty
     @Schema(description = "Device brand", example = "Nokia", type = "String")
     private String brand;
 
-    @Schema(description = "Device state", example = "Available", type = "String")
+    @NotEmpty
+    @Schema(description = "Device state", example = "Available",
+            type = "String", allowableValues = { "AVAILABLE", "IN_USE", "INACTIVE" })
+    @Pattern(regexp = "AVAILABLE|IN_USE|INACTIVE")
     private String state;
 }

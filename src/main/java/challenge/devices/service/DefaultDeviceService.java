@@ -1,8 +1,10 @@
 package challenge.devices.service;
 
 import challenge.devices.domain.Device;
-import challenge.devices.dto.DeviceRequest;
+import challenge.devices.dto.CreateDeviceRequest;
 import challenge.devices.dto.DeviceResponse;
+import challenge.devices.dto.UpdateDeviceRequest;
+import challenge.devices.exception.DeviceInUseException;
 import challenge.devices.exception.DeviceNotFoundException;
 import challenge.devices.repository.DeviceRepository;
 import challenge.devices.service.mapper.DeviceMapper;
@@ -25,22 +27,29 @@ public class DefaultDeviceService implements DeviceService {
 
     @Override
     @Transactional
-    public DeviceResponse createDevice(DeviceRequest deviceRequest) {
-        log.debug("createDevice(request={})", deviceRequest);
-        Device device = deviceMapper.toDevice(deviceRequest);
+    public DeviceResponse createDevice(CreateDeviceRequest request) {
+        log.debug("createDevice(request={})", request);
+        Device device = deviceMapper.toDevice(request);
         return transformToResponse(deviceRepository.save(device));
     }
 
     @Override
     @Transactional
-    public DeviceResponse updateDevice(Long id, DeviceRequest deviceRequest) {
-        log.debug("updateDevice(id={},request={})", id, deviceRequest);
+    public DeviceResponse updateDevice(Long id, UpdateDeviceRequest request) {
+        log.debug("updateDevice(id={},request={})", id, request);
         Device device = getDeviceOrThrowException(id);
-        if (device.getState() == Device.State.IN_USE) {
-            throw new IllegalStateException("Cannot update device in use");
-        }
-        device.setBrand(deviceRequest.getBrand());
-        device.setName(deviceRequest.getName());
+        validateDeviceUpdate(device, request);
+        device = deviceMapper.toUpdatedDevice(request);
+        return transformToResponse(deviceRepository.save(device));
+    }
+
+    @Override
+    @Transactional
+    public DeviceResponse partialUpdateDevice(Long id, UpdateDeviceRequest request) {
+        log.debug("partialUpdateDevice(id={},request={})", id, request);
+        Device device = getDeviceOrThrowException(id);
+        validatePartialDeviceUpdate(device, request);
+        device = deviceMapper.toPartiallyUpdatedDevice(request);
         return transformToResponse(deviceRepository.save(device));
     }
 
@@ -61,16 +70,16 @@ public class DefaultDeviceService implements DeviceService {
 
     @Override
     @Transactional
-    public List<DeviceResponse> getAllDevicesByBrand(String brand) {
-        log.debug("getAllDevicesByBrand(brand={})", brand);
+    public List<DeviceResponse> getDevicesByBrand(String brand) {
+        log.debug("getDevicesByBrand(brand={})", brand);
         return deviceRepository.findByBrand(brand)
                 .stream().map(this::transformToResponse).collect(toList());
     }
 
     @Override
     @Transactional
-    public List<DeviceResponse> getAllDevicesByState(String state) {
-        log.debug("getAllDevicesByState(state={})", state);
+    public List<DeviceResponse> getDevicesByState(String state) {
+        log.debug("getDevicesByState(state={})", state);
         return deviceRepository.findByState(Device.State.valueOf(state))
                 .stream().map(this::transformToResponse).collect(toList());
     }
@@ -81,7 +90,7 @@ public class DefaultDeviceService implements DeviceService {
         log.debug("deleteDevice(id={})", id);
         Device device = getDeviceOrThrowException(id);
         if (device.getState() == Device.State.IN_USE) {
-            throw new IllegalStateException("Cannot delete device in use");
+            throw new DeviceInUseException("Cannot delete device in use");
         }
         deviceRepository.delete(device);
     }
@@ -91,6 +100,25 @@ public class DefaultDeviceService implements DeviceService {
     }
 
     private Device getDeviceOrThrowException(Long deviceId) {
-        return deviceRepository.findById(deviceId).orElseThrow(DeviceNotFoundException::new);
+        return deviceRepository.findById(deviceId).orElseThrow(
+                () -> new DeviceNotFoundException("Device not found"));
+    }
+
+    private void validateDeviceUpdate(Device device, UpdateDeviceRequest request){
+        if (device.getState() == Device.State.IN_USE) {
+            if (!device.getName().equals(request.getName()) ||
+                    !device.getBrand().equals(request.getBrand())) {
+                throw new DeviceInUseException("Cannot update name or brand of a device in use");
+            }
+        }
+    }
+
+    private void validatePartialDeviceUpdate(Device device, UpdateDeviceRequest request){
+        if (device.getState() == Device.State.IN_USE) {
+            if (request.getName() != null && !device.getName().equals(request.getName()) ||
+                    request.getBrand() != null && !device.getBrand().equals(request.getBrand())) {
+                throw new DeviceInUseException("Cannot update name or brand of a device in use");
+            }
+        }
     }
 }
