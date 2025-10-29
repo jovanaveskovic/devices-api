@@ -44,7 +44,7 @@ public class DeviceController {
 
     @Operation(summary = "Fetches single device")
     @GetMapping(path = "/{deviceId}")
-    public DeviceResponse updateDevice(@PathVariable Long deviceId) {
+    public DeviceResponse getDevice(@PathVariable Long deviceId) {
         log.debug("getDevice(deviceId={})", deviceId);
         return deviceService.getDevice(deviceId);
     }

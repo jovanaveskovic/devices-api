@@ -14,15 +14,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UpdateDeviceRequest {
 
-    @NotEmpty
     @Schema(description = "Device name", example = "Router", type = "String")
     private String name;
 
-    @NotEmpty
     @Schema(description = "Device brand", example = "Nokia", type = "String")
     private String brand;
 
-    @NotEmpty
     @Schema(description = "Device state", example = "Available",
             type = "String", allowableValues = { "Available", "In_use", "Inactive" })
     @Pattern(regexp = "Available|In_use|Inactive")
