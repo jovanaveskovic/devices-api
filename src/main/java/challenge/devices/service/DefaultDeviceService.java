@@ -64,7 +64,10 @@ public class DefaultDeviceService implements DeviceService {
     @Transactional
     public List<DeviceResponse> getDevices(String brand, String state) {
         log.debug("getDevices(brand={}, state={})", brand, state);
-        return deviceRepository.getDevices(brand, Device.State.valueOf(state))
+        Device.State deviceState = null;
+        if (state != null && !state.isEmpty())
+            deviceState = Device.State.valueOf(state);
+        return deviceRepository.getDevices(brand, deviceState)
                 .stream().map(this::transformToResponse).collect(toList());
     }
 

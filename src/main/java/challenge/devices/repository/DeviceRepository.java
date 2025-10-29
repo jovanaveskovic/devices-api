@@ -12,7 +12,7 @@ import java.util.List;
 public interface DeviceRepository extends JpaRepository<Device, Long> {
     @Query("""
         SELECT d FROM Device d
-        WHERE (:brand IS NULL OR d.brand = :brand)
+        WHERE (:brand IS NULL OR :brand = '' OR d.brand = :brand)
           AND (:state IS NULL OR d.state = :state)
     """)
     List<Device> getDevices(@Param("brand") String brand, @Param("state") Device.State state);
