@@ -15,23 +15,22 @@ public class DeviceMapper {
         Device device = new Device();
         device.setName(request.getName());
         device.setBrand(request.getBrand());
+        device.setState(Device.State.Available);
         return device;
     }
 
-    public Device toUpdatedDevice(UpdateDeviceRequest request) {
-        Device device = new Device();
-        device.setName(request.getName());
-        device.setBrand(request.getBrand());
-        device.setState(Device.State.valueOf(request.getState()));
-        return device;
+    public Device toUpdatedDevice(Device existingDevice, UpdateDeviceRequest request) {
+        existingDevice.setName(request.getName());
+        existingDevice.setBrand(request.getBrand());
+        existingDevice.setState(Device.State.valueOf(request.getState()));
+        return existingDevice;
     }
 
-    public Device toPartiallyUpdatedDevice(UpdateDeviceRequest request) {
-        Device device = new Device();
-        if (request.getBrand() != null) device.setBrand(request.getBrand());
-        if (request.getName() != null) device.setName(request.getName());
-        if (request.getState() != null) device.setState(Device.State.valueOf(request.getState()));
-        return device;
+    public Device toPartiallyUpdatedDevice(Device existingDevice, UpdateDeviceRequest request) {
+        if (request.getBrand() != null) existingDevice.setBrand(request.getBrand());
+        if (request.getName() != null) existingDevice.setName(request.getName());
+        if (request.getState() != null) existingDevice.setState(Device.State.valueOf(request.getState()));
+        return existingDevice;
     }
 
     public DeviceResponse toResponse(Device device) {

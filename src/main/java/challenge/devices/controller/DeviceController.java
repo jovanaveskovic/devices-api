@@ -5,6 +5,7 @@ import challenge.devices.dto.DeviceResponse;
 import challenge.devices.dto.UpdateDeviceRequest;
 import challenge.devices.service.DeviceService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,7 @@ public class DeviceController {
     @PatchMapping(path = "/{deviceId}")
     public DeviceResponse partialUpdateDevice(@PathVariable Long deviceId, @RequestBody @Valid UpdateDeviceRequest request) {
         log.debug("partialUpdateDevice(deviceId={},request={})", deviceId, request);
-        return deviceService.updateDevice(deviceId, request);
+        return deviceService.partialUpdateDevice(deviceId, request);
     }
 
     @Operation(summary = "Fetches single device")
@@ -50,27 +51,15 @@ public class DeviceController {
 
     @Operation(summary = "Fetches all devices")
     @GetMapping
-    public List<DeviceResponse> getAllDevices() {
-        log.debug("getAllDevices()");
-        return deviceService.getAllDevices();
-    }
-
-    @Operation(summary = "Fetches devices by brand")
-    @GetMapping(path = "/{brand}")
-    public List<DeviceResponse> getDevicesByBrand(@PathVariable String brand) {
-        log.debug("getDevicesByBrand(brand={})", brand);
-        return deviceService.getDevicesByBrand(brand);
-    }
-
-    @Operation(summary = "Fetches devices by state")
-    @GetMapping(path = "/{state}")
-    public List<DeviceResponse> getDevicesByState(@PathVariable String state) {
-        log.debug("getDevicesByState(state={})", state);
-        return deviceService.getDevicesByState(state);
+    public List<DeviceResponse> getAllDevices(
+            @Parameter(description = "Filter by brand (optional)") @RequestParam(required = false) String brand,
+            @Parameter(description = "Filter by state (optional)") @RequestParam(required = false) String state) {
+        log.debug("getDevices(brand={}, state={})", brand, state);
+        return deviceService.getDevices(brand, state);
     }
 
     @Operation(summary = "Deletes a device")
-    @GetMapping(path = "/{deviceId}")
+    @DeleteMapping(path = "/{deviceId}")
     public void deleteDevice(@PathVariable Long deviceId) {
         log.debug("deleteDevice(deviceId={})", deviceId);
         deviceService.deleteDevice(deviceId);

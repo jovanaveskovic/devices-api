@@ -3,6 +3,7 @@ package challenge.devices.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
@@ -25,10 +26,11 @@ public class Device {
     @Enumerated(EnumType.STRING)
     private State state;
 
+    @CreatedDate
     @Column(name = "creation_time", updatable = false, nullable = false)
     private Instant creationTime;
 
     public enum State {
-        AVAILABLE, IN_USE, INACTIVE
+        Available, In_use, Inactive
     }
 }

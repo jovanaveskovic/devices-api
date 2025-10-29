@@ -11,8 +11,6 @@ public interface DeviceService {
     DeviceResponse updateDevice(Long id, UpdateDeviceRequest request);
     DeviceResponse partialUpdateDevice(Long id, UpdateDeviceRequest requests);
     DeviceResponse getDevice(Long id);
-    List<DeviceResponse> getAllDevices();
-    List<DeviceResponse> getDevicesByBrand(String brand);
-    List<DeviceResponse> getDevicesByState(String state);
+    List<DeviceResponse> getDevices(String brand, String state);
     void deleteDevice(Long id);
 }

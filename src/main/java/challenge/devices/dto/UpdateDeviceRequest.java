@@ -24,7 +24,7 @@ public class UpdateDeviceRequest {
 
     @NotEmpty
     @Schema(description = "Device state", example = "Available",
-            type = "String", allowableValues = { "AVAILABLE", "IN_USE", "INACTIVE" })
-    @Pattern(regexp = "AVAILABLE|IN_USE|INACTIVE")
+            type = "String", allowableValues = { "Available", "In_use", "Inactive" })
+    @Pattern(regexp = "Available|In_use|Inactive")
     private String state;
 }

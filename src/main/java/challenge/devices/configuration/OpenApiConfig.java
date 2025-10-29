@@ -19,7 +19,7 @@ public class OpenApiConfig {
                         .version("1.0.0")
                         .contact(new Contact()
                                 .name("Device Team")
-                                .email("support@device-service.com"))
+                                .email("support@devices-api.com"))
                         .license(new License()
                                 .name("Apache 2.0")
                                 .url("http://springdoc.org")));

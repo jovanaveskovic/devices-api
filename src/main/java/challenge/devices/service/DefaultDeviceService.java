@@ -39,7 +39,7 @@ public class DefaultDeviceService implements DeviceService {
         log.debug("updateDevice(id={},request={})", id, request);
         Device device = getDeviceOrThrowException(id);
         validateDeviceUpdate(device, request);
-        device = deviceMapper.toUpdatedDevice(request);
+        device = deviceMapper.toUpdatedDevice(device, request);
         return transformToResponse(deviceRepository.save(device));
     }
 
@@ -49,7 +49,7 @@ public class DefaultDeviceService implements DeviceService {
         log.debug("partialUpdateDevice(id={},request={})", id, request);
         Device device = getDeviceOrThrowException(id);
         validatePartialDeviceUpdate(device, request);
-        device = deviceMapper.toPartiallyUpdatedDevice(request);
+        device = deviceMapper.toPartiallyUpdatedDevice(device, request);
         return transformToResponse(deviceRepository.save(device));
     }
 
@@ -62,25 +62,9 @@ public class DefaultDeviceService implements DeviceService {
 
     @Override
     @Transactional
-    public List<DeviceResponse> getAllDevices() {
-        log.debug("getAllDevices()");
-        return deviceRepository.findAll()
-                .stream().map(this::transformToResponse).collect(toList());
-    }
-
-    @Override
-    @Transactional
-    public List<DeviceResponse> getDevicesByBrand(String brand) {
-        log.debug("getDevicesByBrand(brand={})", brand);
-        return deviceRepository.findByBrand(brand)
-                .stream().map(this::transformToResponse).collect(toList());
-    }
-
-    @Override
-    @Transactional
-    public List<DeviceResponse> getDevicesByState(String state) {
-        log.debug("getDevicesByState(state={})", state);
-        return deviceRepository.findByState(Device.State.valueOf(state))
+    public List<DeviceResponse> getDevices(String brand, String state) {
+        log.debug("getDevices(brand={}, state={})", brand, state);
+        return deviceRepository.getDevices(brand, Device.State.valueOf(state))
                 .stream().map(this::transformToResponse).collect(toList());
     }
 
@@ -89,7 +73,7 @@ public class DefaultDeviceService implements DeviceService {
     public void deleteDevice(Long id) {
         log.debug("deleteDevice(id={})", id);
         Device device = getDeviceOrThrowException(id);
-        if (device.getState() == Device.State.IN_USE) {
+        if (device.getState() == Device.State.In_use) {
             throw new DeviceInUseException("Cannot delete device in use");
         }
         deviceRepository.delete(device);
@@ -105,7 +89,7 @@ public class DefaultDeviceService implements DeviceService {
     }
 
     private void validateDeviceUpdate(Device device, UpdateDeviceRequest request){
-        if (device.getState() == Device.State.IN_USE) {
+        if (device.getState() == Device.State.In_use) {
             if (!device.getName().equals(request.getName()) ||
                     !device.getBrand().equals(request.getBrand())) {
                 throw new DeviceInUseException("Cannot update name or brand of a device in use");
@@ -114,7 +98,7 @@ public class DefaultDeviceService implements DeviceService {
     }
 
     private void validatePartialDeviceUpdate(Device device, UpdateDeviceRequest request){
-        if (device.getState() == Device.State.IN_USE) {
+        if (device.getState() == Device.State.In_use) {
             if (request.getName() != null && !device.getName().equals(request.getName()) ||
                     request.getBrand() != null && !device.getBrand().equals(request.getBrand())) {
                 throw new DeviceInUseException("Cannot update name or brand of a device in use");
