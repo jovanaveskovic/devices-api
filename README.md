@@ -10,10 +10,13 @@ To build this project, you will need to have at least the following:
 - Maven 3.9+
 
 ## Features
-Create, update (full/partial), fetch, delete devices  
-PostgreSQL persistence  
-Test coverage  
-Containerized via Docker
+- Create a new device.
+- Fully and/or partially update an existing device.
+- Fetch a single device.
+- Fetch all devices.
+- Fetch devices by brand.
+- Fetch devices by state.
+- Delete a single device.
 
 ## Building the project and running tests
 You can build the package by running the following command:
@@ -35,7 +38,7 @@ It will start the following:
 - **devices-api** - listens on port 8080
 
 ### Access points
-- API Base URL: http://localhost:8080/api/v1/phones
+- API Base URL: http://localhost:8080/api/v1/devices
 - Swagger UI: http://localhost:8080/swagger-ui.html
 - API Docs: http://localhost:8080/api-docs
 - Database: localhost:5432
