@@ -35,9 +35,9 @@ It will start the following:
 - **devices-api** - listens on port 8080
 
 ### Access points
-API Base URL: http://localhost:8080/api/v1/phones
-Swagger UI: http://localhost:8080/swagger-ui.html
-API Docs: http://localhost:8080/api-docs
-Database: localhost:5432
+- API Base URL: http://localhost:8080/api/v1/phones
+- Swagger UI: http://localhost:8080/swagger-ui.html
+- API Docs: http://localhost:8080/api-docs
+- Database: localhost:5432
 
 To shut down the services gracefully run `ctrl+c`. To reset the data of the environment run `docker-compose down -v`.
