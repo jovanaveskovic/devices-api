@@ -6,6 +6,7 @@ import challenge.devices.dto.DeviceResponse;
 import challenge.devices.dto.UpdateDeviceRequest;
 import challenge.devices.exception.DeviceInUseException;
 import challenge.devices.exception.DeviceNotFoundException;
+import challenge.devices.exception.DeviceValidationException;
 import challenge.devices.repository.DeviceRepository;
 import challenge.devices.service.mapper.DeviceMapper;
 import lombok.RequiredArgsConstructor;
@@ -92,6 +93,15 @@ public class DefaultDeviceService implements DeviceService {
     }
 
     private void validateDeviceUpdate(Device device, UpdateDeviceRequest request){
+        if (request.getName() == null || request.getName().isEmpty()){
+            throw new DeviceValidationException("Name cannot be empty");
+        }
+        if (request.getBrand() == null || request.getBrand().isEmpty()){
+            throw new DeviceValidationException("Brand cannot be empty");
+        }
+        if (request.getState() == null || request.getState().isEmpty()){
+            throw new DeviceValidationException("State cannot be empty");
+        }
         if (device.getState() == Device.State.In_use) {
             if (!device.getName().equals(request.getName()) ||
                     !device.getBrand().equals(request.getBrand())) {

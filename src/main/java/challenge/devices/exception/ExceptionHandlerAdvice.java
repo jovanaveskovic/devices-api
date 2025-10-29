@@ -28,6 +28,15 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
                         e.getMessage()));
     }
 
+    @ExceptionHandler(DeviceValidationException.class)
+    public ResponseEntity<ErrorResponse> handleDeviceValidationException(DeviceValidationException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+                        HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                        e.getMessage()));
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleException(RuntimeException e) {
         return ResponseEntity

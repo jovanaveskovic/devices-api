@@ -6,6 +6,7 @@ import challenge.devices.dto.DeviceResponse;
 import challenge.devices.dto.UpdateDeviceRequest;
 import challenge.devices.exception.DeviceInUseException;
 import challenge.devices.exception.DeviceNotFoundException;
+import challenge.devices.exception.DeviceValidationException;
 import challenge.devices.repository.DeviceRepository;
 import challenge.devices.service.mapper.DeviceMapper;
 import org.junit.jupiter.api.Test;
@@ -53,7 +54,10 @@ public class DefaultDeviceServiceTest {
     @Test
     void shouldFullyUpdateDevice() {
         Long id = 123L;
-        UpdateDeviceRequest deviceRequest = mock(UpdateDeviceRequest.class);
+        UpdateDeviceRequest deviceRequest = new UpdateDeviceRequest();
+        deviceRequest.setName("test-device");
+        deviceRequest.setBrand("test-brand");
+        deviceRequest.setState("Available");
         Device device = mock(Device.class);
         Device savedDevice = mock(Device.class);
         DeviceResponse deviceResponse = mock(DeviceResponse.class);
@@ -97,7 +101,10 @@ public class DefaultDeviceServiceTest {
     @Test
     void shouldNotUpdateDevice_deviceInUse() {
         Long id = 123L;
-        UpdateDeviceRequest deviceRequest = mock(UpdateDeviceRequest.class);
+        UpdateDeviceRequest deviceRequest = new UpdateDeviceRequest();
+        deviceRequest.setName("test-device");
+        deviceRequest.setBrand("test-brand");
+        deviceRequest.setState("In_use");
         Device device = mock(Device.class);
         when(deviceRepository.findById(id)).thenReturn(Optional.of(device));
         doReturn(device).when(deviceMapper).toUpdatedDevice(device, deviceRequest);
@@ -106,6 +113,18 @@ public class DefaultDeviceServiceTest {
                 .when(deviceRepository).save(device);
 
         assertThrows(DeviceInUseException.class, () -> deviceService.updateDevice(id, deviceRequest));
+    }
+
+    @Test
+    void shouldNotUpdateDevice_validationFailed() {
+        Long id = 123L;
+        UpdateDeviceRequest deviceRequest = new UpdateDeviceRequest();
+        deviceRequest.setBrand("test-brand");
+        deviceRequest.setState("Available");
+        Device device = mock(Device.class);
+        when(deviceRepository.findById(id)).thenReturn(Optional.of(device));
+
+        assertThrows(DeviceValidationException.class, () -> deviceService.updateDevice(id, deviceRequest));
     }
 
     @Test
