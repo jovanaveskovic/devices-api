@@ -18,9 +18,9 @@ Containerized via Docker
 ## Building the project and running tests
 You can build the package by running the following command:
 ```
-mvn clean package
+mvn clean install
 ```
-To run all the tests, you should run the following command:
+To run only the tests, you should run the following command:
 ```
 mvn test
 ```
