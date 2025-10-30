@@ -55,14 +55,14 @@ public class DefaultDeviceService implements DeviceService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public DeviceResponse getDevice(Long id) {
         log.debug("getDevice(id={})", id);
         return transformToResponse(getDeviceOrThrowException(id));
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<DeviceResponse> getDevices(String brand, String state) {
         log.debug("getDevices(brand={}, state={})", brand, state);
         Device.State deviceState = null;
